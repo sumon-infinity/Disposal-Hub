@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispose Right — E-Cigarette Waste Guidance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132420;
+    --ink-soft:#4d5f5a;
+    --paper:#ffffff;
+    --paper-tint:#f2f6f4;
+    --teal:#0f3d3e;
+    --teal-deep:#0a2b2c;
+    --amber:#e8941b;
+    --amber-soft:#fde9cd;
+    --line:#dde5e2;
+    --ring-track:#e3ece9;
+    --danger:#c65a3a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:
+      radial-gradient(1100px 600px at 15% -10%, #eef4f1 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #fbf1e3 0%, transparent 55%),
+      var(--paper-tint);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 56px;
+  }
+  .stage-head{
+    max-width:520px;
+    text-align:center;
+    margin-bottom:22px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    background:var(--amber-soft);
+    display:inline-block;
+    padding:5px 12px;
+    border-radius:100px;
+    margin-bottom:14px;
+    font-weight:600;
+  }
+  .stage-head h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:26px;
+    font-weight:700;
+    line-height:1.25;
+    color:var(--ink);
+  }
+  .stage-head p{
+    margin-top:8px;
+    font-size:14.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+
+  /* ---------- Phone frame ---------- */
+  .phone{
+    width:360px;
+    max-width:92vw;
+    height:720px;
+    max-height:80vh;
+    background:var(--teal-deep);
+    border-radius:44px;
+    padding:12px;
+    box-shadow:0 30px 60px -20px rgba(10,43,44,.45), 0 2px 0 rgba(255,255,255,.06) inset;
+    position:relative;
+  }
+  .screen{
+    background:var(--paper);
+    width:100%;
+    height:100%;
+    border-radius:34px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .notch{
+    position:absolute;
+    top:12px; left:50%; transform:translateX(-50%);
+    width:90px; height:20px;
+    background:var(--teal-deep);
+    border-radius:12px;
+    z-index:5;
+  }
+  .status{
+    height:34px;
+    flex:0 0 34px;
+  }
+
+  .view{
+    flex:1;
+    display:none;
+    flex-direction:column;
+    overflow-y:auto;
+    padding:20px 20px 18px;
+    animation:fade .35s ease;
+  }
+  .view.active{display:flex;}
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  /* ---------- shared bits ---------- */
+  .brand-row{display:flex; align-items:center; gap:9px; margin-bottom:18px;}
+  .brand-mark{
+    width:30px;height:30px;border-radius:9px;
+    background:var(--teal);
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;
+  }
+  .brand-mark svg{width:16px;height:16px;}
+  .brand-name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16.5px;}
+
+  .h-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:21px; line-height:1.28; color:var(--ink);}
+  .h-sub{font-size:13.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5;}
+
+  .btn{
+    border:none; cursor:pointer; font-family:'Inter',sans-serif; font-weight:600;
+    border-radius:13px; padding:14px 18px; font-size:14.5px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--teal); color:#fff; box-shadow:0 10px 22px -10px rgba(15,61,62,.55);}
+  .btn-ghost{background:var(--paper); color:var(--teal); border:1.4px solid var(--line);}
+  .btn-amber{background:var(--amber); color:#28180a; box-shadow:0 10px 22px -10px rgba(232,148,27,.6);}
+  .btn-block{width:100%;}
+
+  /* ---------- Home screen ---------- */
+  #view-home{justify-content:space-between;}
+  .stat-pill{
+    background:var(--teal); color:#fff; border-radius:16px; padding:16px 18px;
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
+  }
+  .stat-pill .num{font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:700; color:var(--amber);}
+  .stat-pill .lbl{font-size:11.5px; line-height:1.35; max-width:150px; opacity:.9;}
+  .home-actions{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+  .qr-tile{
+    border:1.6px dashed #c9d6d2; border-radius:16px; padding:18px;
+    display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center;
+    margin-top:6px;
+  }
+  .qr-box{width:74px;height:74px;background:var(--ink); border-radius:10px; position:relative;}
+  .qr-box::before{
+    content:""; position:absolute; inset:8px;
+    background-image:
+      linear-gradient(90deg, #fff 2px, transparent 2px),
+      linear-gradient(#fff 2px, transparent 2px);
+    background-size:9px 9px;
+  }
+  .qr-tile small{color:var(--ink-soft); font-size:12px; line-height:1.4;}
+
+  /* ---------- Item picker ---------- */
+  .item-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px;}
+  .item-card{
+    border:1.6px solid var(--line); border-radius:16px; padding:16px 12px;
+    display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer;
+    background:var(--paper); text-align:center;
+  }
+  .item-card:hover{border-color:var(--teal);}
+  .item-ic{width:44px; height:44px;}
+  .item-card span{font-size:13px; font-weight:600;}
+  .item-card small{font-size:10.5px; color:var(--ink-soft);}
+
+  /* ---------- Guidance ---------- */
+  .ring-wrap{display:flex; align-items:center; gap:14px; margin:16px 0 20px;}
+  .ring{position:relative; width:64px; height:64px; flex:0 0 auto;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .pct{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px; color:var(--teal);
+  }
+  .ring-copy strong{display:block; font-size:13.5px;}
+  .ring-copy small{color:var(--ink-soft); font-size:11.5px;}
+
+  .step{
+    display:flex; gap:12px; padding:13px 0; border-bottom:1px solid var(--line);
+  }
+  .step:last-of-type{border-bottom:none;}
+  .step-num{
+    width:26px;height:26px;border-radius:50%; background:var(--paper-tint); border:1.4px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px; font-weight:600; color:var(--teal); flex:0 0 auto;
+  }
+  .step.done .step-num{background:var(--teal); color:#fff; border-color:var(--teal);}
+  .step p{font-size:13.5px; line-height:1.45;}
+  .step p b{color:var(--ink);}
+
+  /* ---------- Finder ---------- */
+  .map-card{
+    border-radius:16px; overflow:hidden; border:1.6px solid var(--line); margin-top:14px;
+  }
+  .map-fake{
+    height:150px; position:relative;
+    background:
+      linear-gradient(#eaf1ee,#eaf1ee) padding-box,
+      repeating-linear-gradient(0deg, transparent, transparent 17px, #dbe6e2 17px, #dbe6e2 18px),
+      repeating-linear-gradient(90deg, transparent, transparent 17px, #dbe6e2 17px, #dbe6e2 18px);
+  }
+  .pin{
+    position:absolute; width:22px; height:22px; border-radius:50% 50% 50% 0;
+    background:var(--amber); transform:rotate(-45deg);
+    box-shadow:0 3px 6px rgba(0,0,0,.25);
+  }
+  .pin.you{background:var(--teal);}
+  .loc-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:13px 16px; border-top:1px solid var(--line);
+  }
+  .loc-row:first-of-type{border-top:none;}
+  .loc-name{font-size:13.5px; font-weight:600;}
+  .loc-meta{font-size:11px; color:var(--ink-soft); margin-top:2px;}
+  .loc-dist{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; color:var(--teal);
+    background:var(--paper-tint); padding:5px 9px; border-radius:8px; flex:0 0 auto;
+  }
+
+  /* ---------- Impact / layers teaser ---------- */
+  .layer-row{
+    display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:12px;
+    background:var(--paper-tint); margin-bottom:8px;
+  }
+  .layer-row.active-layer{background:var(--amber-soft); border:1.4px solid var(--amber);}
+  .layer-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; color:var(--teal);
+    background:#fff; border-radius:7px; padding:3px 7px; flex:0 0 auto; border:1px solid var(--line);
+  }
+  .layer-row span{font-size:12.5px; font-weight:500;}
+
+  /* ---------- Bottom tab bar ---------- */
+  .tabbar{
+    flex:0 0 64px; display:flex; border-top:1px solid var(--line); background:var(--paper);
+  }
+  .tab{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    cursor:pointer; color:#9fb0ab; font-size:9.5px; font-weight:600; border:none; background:none;
+  }
+  .tab.on{color:var(--teal);}
+  .tab svg{width:19px; height:19px;}
+
+  .foot-note{
+    max-width:520px; text-align:center; margin-top:26px; font-size:12.5px; color:var(--ink-soft); line-height:1.6;
+  }
+  .foot-note b{color:var(--ink);}
+</style>
+</head>
+<body>
+
+  <div class="stage-head">
+    <span class="eyebrow">Layer 1–3 Prototype · Enhanced SCT Framework</span>
+    <h1>Dispose Right — turning disposal anxiety into disposal confidence</h1>
+    <p>A working demo of the IT-enabled e-waste management system proposed in Chapter 5. Tap through the phone below.</p>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="status"></div>
+
+      <!-- HOME -->
+      <div class="view active" id="view-home">
+        <div>
+          <div class="brand-row">
+            <div class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L12 10 M8 6 L16 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><rect x="8" y="10" width="8" height="11" rx="3" stroke="#fff" stroke-width="2"/></svg>
+            </div>
+            <div class="brand-name">Dispose Right</div>
+          </div>
+          <div class="stat-pill">
+            <div class="num">70.7%</div>
+            <div class="lbl">of urban youth in Bangladesh dispose e-cigarettes improperly. Let's fix that, together.</div>
+          </div>
+          <div class="h-title">What are you disposing today?</div>
+          <div class="h-sub">Scan the product's QR code, or choose it manually below.</div>
+        </div>
+
+        <div>
+          <div class="qr-tile" onclick="go('items')">
+            <div class="qr-box"></div>
+            <div>
+              <div style="font-weight:600; font-size:13.5px;">Tap to simulate QR scan</div>
+              <small>On the real product, this triggers automatically (Layer 2)</small>
+            </div>
+          </div>
+          <div class="home-actions">
+            <button class="btn btn-ghost btn-block" onclick="go('items')">Choose item manually</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM PICKER -->
+      <div class="view" id="view-items">
+        <div class="brand-row"><div class="h-title" style="font-size:18px;">What did you scan?</div></div>
+        <div class="h-sub">We'll give you the exact steps for this item.</div>
+        <div class="item-grid">
+          <div class="item-card" onclick="selectItem('pod')">
+            <svg class="item-ic" viewBox="0 0 24 24" fill="none"><rect x="7" y="4" width="10" height="16" rx="3" stroke="#0f3d3e" stroke-width="1.6"/><path d="M9 4 L9 2 M15 4 L15 2" stroke="#0f3d3e" stroke-width="1.6"/></svg>
+            <span>Vape Pod</span>
+            <small>Plastic + nicotine</small>
+          </div>
+          <div class="item-card" onclick="selectItem('battery')">
+            <svg class="item-ic" viewBox="0 0 24 24" fill="none"><rect x="6" y="7" width="12" height="14" rx="2" stroke="#0f3d3e" stroke-width="1.6"/><rect x="9" y="4" width="6" height="3" rx="1" stroke="#0f3d3e" stroke-width="1.6"/><path d="M9 13 L15 13 M12 10 L12 16" stroke="#0f3d3e" stroke-width="1.6"/></svg>
+            <span>Battery</span>
+            <small>Lithium-ion</small>
+          </div>
+          <div class="item-card" onclick="selectItem('liquid')">
+            <svg class="item-ic" viewBox="0 0 24 24" fill="none"><path d="M10 3 H14 V7 L17 13 V19 A2 2 0 0 1 15 21 H9 A2 2 0 0 1 7 19 V13 L10 7 Z" stroke="#0f3d3e" stroke-width="1.6"/></svg>
+            <span>E-Liquid Bottle</span>
+            <small>Nicotine residue</small>
+          </div>
+          <div class="item-card" onclick="selectItem('device')">
+            <svg class="item-ic" viewBox="0 0 24 24" fill="none"><rect x="8" y="3" width="8" height="18" rx="3" stroke="#0f3d3e" stroke-width="1.6"/><circle cx="12" cy="8" r="1.3" fill="#0f3d3e"/></svg>
+            <span>Full Device</span>
+            <small>Mixed materials</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- GUIDANCE -->
+      <div class="view" id="view-guide">
+        <div class="brand-row"><div class="h-title" style="font-size:18px;" id="guide-title">Guidance</div></div>
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg width="64" height="64">
+              <circle cx="32" cy="32" r="27" fill="none" stroke="#e3ece9" stroke-width="7"/>
+              <circle id="ring-progress" cx="32" cy="32" r="27" fill="none" stroke="#e8941b" stroke-width="7" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+            </svg>
+            <div class="pct" id="ring-pct">0%</div>
+          </div>
+          <div class="ring-copy">
+            <strong>Disposal confidence</strong>
+            <small>Builds as you complete each step — this is Self-Efficacy, the strongest predictor in our model (β = 0.289).</small>
+          </div>
+        </div>
+        <div id="steps-list"></div>
+        <button class="btn btn-amber btn-block" style="margin-top:14px;" onclick="go('finder')">Find nearest drop-off point →</button>
+      </div>
+
+      <!-- FINDER -->
+      <div class="view" id="view-finder">
+        <div class="brand-row"><div class="h-title" style="font-size:18px;">Nearest collection points</div></div>
+        <div class="h-sub">Layer 3 · GIS Collection Finder — solves the Facility Support gap by making bins discoverable.</div>
+        <div class="map-card">
+          <div class="map-fake">
+            <div class="pin you" style="top:66px; left:48px;"></div>
+            <div class="pin" style="top:38px; left:150px;"></div>
+            <div class="pin" style="top:90px; left:210px;"></div>
+            <div class="pin" style="top:30px; left:260px;"></div>
+          </div>
+          <div class="loc-row">
+            <div><div class="loc-name">DIU Campus Collection Node</div><div class="loc-meta">Daffodil International University · open now</div></div>
+            <div class="loc-dist">0.6 km</div>
+          </div>
+          <div class="loc-row">
+            <div><div class="loc-name">Banani Tech Hub Bin</div><div class="loc-meta">Retailer take-back point · Layer 4</div></div>
+            <div class="loc-dist">1.4 km</div>
+          </div>
+          <div class="loc-row">
+            <div><div class="loc-name">Gulshan Municipal Facility</div><div class="loc-meta">Formal e-waste facility</div></div>
+            <div class="loc-dist">3.1 km</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="go('impact')">Mark as disposed ✓</button>
+      </div>
+
+      <!-- IMPACT / SYSTEM VIEW -->
+      <div class="view" id="view-impact">
+        <div class="brand-row"><div class="h-title" style="font-size:18px;">Nice work 🎉</div></div>
+        <div class="h-sub">You just completed one responsible disposal. Here's how this app fits into the full proposed system:</div>
+        <div style="margin-top:16px;">
+          <div class="layer-row active-layer"><div class="layer-tag">L1</div><span>Mobile Disposal App — you are here</span></div>
+          <div class="layer-row active-layer"><div class="layer-tag">L2</div><span>QR-Code Guidance — triggered your steps</span></div>
+          <div class="layer-row active-layer"><div class="layer-tag">L3</div><span>GIS Collection Finder — found your drop-off</span></div>
+          <div class="layer-row"><div class="layer-tag">L4</div><span>Retailer Take-Back Registry (commercial)</span></div>
+          <div class="layer-row"><div class="layer-tag">L5</div><span>Municipal Monitoring Dashboard (govt policy)</span></div>
+        </div>
+        <button class="btn btn-ghost btn-block" style="margin-top:16px;" onclick="go('home')">Start over</button>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab on" data-t="home" onclick="go('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11 L12 4 L20 11 V20 H4 Z"/></svg>
+          Home
+        </button>
+        <button class="tab" data-t="finder" onclick="go('finder')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20 L15.5 15.5"/></svg>
+          Finder
+        </button>
+        <button class="tab" data-t="impact" onclick="go('impact')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19 L4 13 M11 19 L11 8 M18 19 L18 4"/></svg>
+          System
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot-note"><b>E-Cigarette Disposal Behavior Among Urban Youth in Bangladesh</b> — An Enhanced Social Cognitive Theory Framework for IT-Enabled E-Waste Management. This prototype demonstrates Layers 1–3 of the proposed 5-layer system.</p>
+
+<script>
+const guides = {
+  pod: {
+    title: "Vape Pod",
+    steps: [
+      "Do not throw in household trash — plastic + residual nicotine harm soil for centuries.",
+      "Empty any remaining e-liquid into a sealed container first.",
+      "Wipe the pod dry, then place it in a labelled disposal bag.",
+      "Drop it at a collection point (next step) — never a public street bin."
+    ]
+  },
+  battery: {
+    title: "Lithium-Ion Battery",
+    steps: [
+      "Never bin loose — batteries cause thermal-runaway fires in waste trucks.",
+      "Tape both terminals with clear tape to prevent short-circuiting.",
+      "Store in a cool, dry pouch until drop-off — avoid direct sunlight.",
+      "Take only to a certified e-waste or battery collection point."
+    ]
+  },
+  liquid: {
+    title: "E-Liquid Bottle",
+    steps: [
+      "Never pour leftover liquid down a drain or into soil — it's toxic to aquatic life.",
+      "Keep the cap tightly sealed to avoid leaks in transit.",
+      "Wrap the bottle in a bag if any residue is visible outside.",
+      "Hand it to a formal facility, not a public bin."
+    ]
+  },
+  device: {
+    title: "Full Device",
+    steps: [
+      "A full device mixes plastics, chemicals and a battery — treat it as hazardous, not general waste.",
+      "Power it off completely before transport.",
+      "Keep it in original packaging if you still have it.",
+      "Bring the whole unit to a collection point — don't disassemble it yourself."
+    ]
+  }
+};
+
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  const tab = document.querySelector('.tab[data-t="'+view+'"]');
+  if(tab) tab.classList.add('on');
+}
+
+function selectItem(key){
+  const g = guides[key];
+  document.getElementById('guide-title').textContent = g.title + " — Guidance";
+  const list = document.getElementById('steps-list');
+  list.innerHTML = '';
+  g.steps.forEach((s,i)=>{
+    const row = document.createElement('div');
+    row.className = 'step';
+    row.id = 'step-'+i;
+    row.innerHTML = '<div class="step-num">'+(i+1)+'</div><p>'+s+'</p>';
+    row.onclick = ()=>completeStep(i, g.steps.length, row);
+    list.appendChild(row);
+  });
+  updateRing(0, g.steps.length);
+  go('guide');
+}
+
+function completeStep(i, total, row){
+  if(!row.classList.contains('done')){
+    row.classList.add('done');
+    const done = document.querySelectorAll('.step.done').length;
+    updateRing(done, total);
+  }
+}
+
+function updateRing(done, total){
+  const circumference = 169.6;
+  const pct = Math.round((done/total)*100);
+  document.getElementById('ring-progress').style.strokeDashoffset = circumference - (circumference*pct/100);
+  document.getElementById('ring-pct').textContent = pct + '%';
+}
+</script>
+</body>
+</html>
